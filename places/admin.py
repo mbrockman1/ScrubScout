@@ -6,7 +6,8 @@ from django.urls import path
 
 @admin.register(Place)
 class PlaceAdmin(admin.ModelAdmin):
-    list_display = ['name', 'category', 'average_rating', 'review_count']
+    list_display = ['name', 'slug', 'category', 'state', 'phone', 'facility_id', 'average_rating', 'review_count']
+    list_filter = ('category', 'state')
     search_fields = ['name', 'address']
 
     def get_urls(self):
