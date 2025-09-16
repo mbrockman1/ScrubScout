@@ -1,0 +1,85 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ place.name }} - ScrubScout{% endblock %}
+
+{% block extra_css %}
+<style>
+    .review-card { margin-bottom: 20px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ place.name }}</h1>
+            <p class="lead">{{ place.category }} • {{ place.address }}</p>
+            <p>{{ place.description }}</p>
+            
+            <!-- Rating Summary -->
+            {% if average_rating > 0 %}
+                <div class="alert alert-info">
+                    <strong>Average Rating:</strong>
+                    {% for i in "12345"|make_list %}
+                        {% if forloop.counter <= average_rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                    ({{ average_rating|floatformat:1 }} / {{ review_count }} reviews)
+                </div>
+            {% else %}
+                <p class="text-muted">No reviews yet. Be the first to review!</p>
+            {% endif %}
+
+            <!-- Write Review Button (if allowed) -->
+            {% if user.is_authenticated and can_review %}
+                <a href="{% url 'create_review' place.slug %}" class="btn btn-success mb-3">Write a Review</a>
+            {% elif user.is_authenticated %}
+                <p class="text-warning">You've already reviewed this place.</p>
+            {% else %}
+                <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
+            {% endif %}
+
+            <!-- Reviews Section -->
+            {% if reviews %}
+                <h3>Recent Reviews ({{ review_count }})</h3>
+                {% for review in reviews %}
+                    <div class="card review-card">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ review.title }} 
+                                <span class="text-warning">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                                    {% endfor %}
+                                </span>
+                            </h6>
+                            <p class="card-text">{{ review.body|truncatewords:30 }}</p>
+                            <small class="text-muted">
+                                By {{ review.user.display_name }} • {{ review.created_at|date:"M d, Y" }}
+                                {% if user == review.user %}
+                                    <a href="{% url 'edit_review' review.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                {% endif %}
+                                {% if user.is_authenticated %}
+                                    <a href="{% url 'report_review' review.id %}" class="btn btn-sm btn-warning">Report</a>
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% if review_count > 10 %}
+                    <p><a href="#" class="text-muted">Load more reviews...</a></p> <!-- Placeholder for pagination -->
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            <!-- Sidebar: Tags, Map Placeholder, etc. -->
+            <div class="card">
+                <div class="card-header">Tags</div>
+                <div class="card-body">
+                    {{ place.tags }}
+                </div>
+            </div>
+            <!-- Future: Embed Google Maps here -->
+        </div>
+    </div>
+</div>
+{% endblock %}

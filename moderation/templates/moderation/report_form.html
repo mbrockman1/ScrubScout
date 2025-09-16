@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Report Review - ScrubScout{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Report Inappropriate Content</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="hidden" name="place_slug" value="{{ place_slug|default:'' }}">
+        <button type="submit" class="btn btn-warning">Submit Report</button>
+        <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'core/base.html' %}
+{% load static core_tags %}
+
+{% block title %}{{ profile.display_name }}'s Profile - ScrubScout{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            {% if profile.avatar %}
+                <img src="{{ profile.avatar.url }}" alt="Avatar" class="img-fluid rounded-circle" style="width: 200px; height: 200px;">
+            {% else %}
+                <img src="{% static 'core/css/default-avatar.png' %}" alt="Default Avatar" class="img-fluid rounded-circle" style="width: 200px; height: 200px;">
+            {% endif %}
+            <h3>{{ profile.display_name|default:profile.username }}</h3>
+            <p><strong>Location:</strong> {{ profile.location }}</p>
+            <p><strong>Joined:</strong> {{ profile.join_date|date:"F Y" }}</p>
+            <p><strong>Reviews:</strong> {{ profile.review_count }}</p>
+            <a href="{% url 'edit_profile' %}" class="btn btn-secondary">Edit Profile</a>
+        </div>
+        <div class="col-md-8">
+            <h4>Bio</h4>
+            <p>{{ profile.bio|default:"No bio yet." }}</p>
+            <!-- Future: List user's reviews -->
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+/* Star ratings */
+.stars {
+    color: #ffc107;
+    font-size: 1.2em;
+}
+
+/* Cards and layout tweaks */
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: Arial, sans-serif;
+}
+
+/* Default avatar fallback */
+.default-avatar {
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+}

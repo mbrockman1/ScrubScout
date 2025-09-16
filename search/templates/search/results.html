@@ -1,0 +1,135 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block title %}Search Results - ScrubScout{% endblock %}
+
+{% block extra_css %}
+<style>
+    .sidebar { background-color: #f8f9fa; padding: 20px; border-radius: 8px; }
+    .listing-card { margin-bottom: 20px; }
+</style>
+{% endblock %}
+
+{% block navbar %}
+<!-- Same navbar, but add "Home" link -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">ScrubScout</a>
+        <!-- ... rest same as home.html ... -->
+        <ul class="navbar-nav ms-auto">
+            <!-- ... auth links ... -->
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'home' %}">Home</a>  <!-- Back to landing -->
+            </li>
+        </ul>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Main Content: Results Listings -->
+        <div class="col-md-8">
+            <!-- Top Navigation: Search Refinement & Sort (Yelp-Style) -->
+            <div class="d-flex justify-content-between align-items-center mb-4 bg-light p-3 rounded">
+                <div>
+                    <h4>{{ total_results }} results{% if query %} for "{{ query }}"{% endif %}</h4>
+                    <small class="text-muted">Showing top {{ places|length }} matches</small>
+                </div>
+                <div class="d-flex align-items-center">
+                    <label class="me-2">Sort by:</label>
+                    <select name="sort" onchange="window.location.href='?q={{ query }}&sort=' + this.value + '&tags={{ tags|urlencode }}'" class="form-select w-auto">
+                        <option value="name" {% if sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                        <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                        <option value="reviews" {% if sort == 'reviews' %}selected{% endif %}>Most Reviewed</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Results Cards (Yelp-Style Listings) -->
+            {% if places %}
+                {% for place in places %}
+                <div class="card listing-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div class="w-100">
+                                <h5 class="card-title">{{ place.name }}</h5>
+                                <p class="card-text">{{ place.category }} • {{ place.address }}</p>
+                                {% if place.average_rating %}
+                                    <div class="text-warning mb-2">
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= place.average_rating %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                        ({{ place.average_rating|floatformat:1 }} from {{ place.review_count }} reviews)
+                                    </div>
+                                {% else %}
+                                    <p class="text-muted">No reviews yet</p>
+                                {% endif %}
+                                <p class="card-text">{{ place.description|truncatewords:20 }}</p>
+                                <p><small class="text-muted">Tags: {{ place.tags }}</small></p>
+                            </div>
+                        </div>
+                        <a href="{{ place.get_absolute_url }}" class="btn btn-primary">View Details & Reviews</a>
+                    </div>
+                </div>
+                {% endfor %}
+
+                <!-- Pagination Placeholder (MVP: Add later with django.core.paginator) -->
+                {% if total_results > 20 %}
+                    <div class="text-center mt-4">
+                        <nav aria-label="Results pagination">
+                            <ul class="pagination">
+                                <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                                <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <h4>No results found for "{{ query }}"</h4>
+                    <p class="text-muted">Try broadening your search or checking spelling.</p>
+                    <a href="{% url 'home' %}" class="btn btn-primary">Back to Home</a>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar: Filters & Navigation (Yelp-Style) -->
+        <div class="col-md-4">
+            <div class="sidebar sticky-top">
+                <h5>Filters</h5>
+                <!-- Category Filter -->
+                <h6>Category</h6>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="hospital">
+                    <label class="form-check-label" for="hospital">Hospitals</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="clinic">
+                    <label class="form-check-label" for="clinic">Clinics</label>
+                </div>
+                <!-- Add more categories based on your model -->
+
+                <!-- Tag Filter -->
+                <h6 class="mt-3">Tags</h6>
+                <input type="text" class="form-control" placeholder="e.g., ER, PT" value="{{ tags }}" 
+                       onchange="window.location.href='?q={{ query }}&tags=' + this.value + '&sort={{ sort }}'">
+                <small class="text-muted">Comma-separated</small>
+
+                <!-- Quick Links -->
+                <h6 class="mt-3">Popular Searches</h6>
+                <ul class="list-unstyled">
+                    <li><a href="?q=hospital&sort=rating">Top Hospitals</a></li>
+                    <li><a href="?q=agency&sort=reviews">Travel Agencies</a></li>
+                    <li><a href="?q=ER">Emergency Rooms</a></li>
+                </ul>
+
+                <hr>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary w-100">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

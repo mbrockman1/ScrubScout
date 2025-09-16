@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Moderation Dashboard - ScrubScout{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Pending Reports</h1>
+    {% for report in reports %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Reported by: {{ report.reporter.display_name }}</h5>
+                <p><strong>Reason:</strong> {{ report.reason }}</p>
+                <p><strong>Description:</strong> {{ report.description }}</p>
+                <p><strong>Review:</strong> {{ report.review.title }} (Rating: {{ report.review.rating }})</p>
+                <p><strong>Date:</strong> {{ report.created_at|date:"M d, Y" }}</p>
+                <!-- Add action buttons: Hide/Delete/Restore via forms -->
+                <a href="#" class="btn btn-sm btn-danger">Hide Review</a>
+                <a href="#" class="btn btn-sm btn-success">Resolve</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No pending reports.</p>
+    {% endfor %}
+</div>
+{% endblock %}

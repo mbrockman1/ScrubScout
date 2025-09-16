@@ -1,0 +1,104 @@
+{% extends 'core/base.html' %}
+
+{% load static %}
+
+{% block extra_css %}
+<style>
+    body { background-color: #f8f9fa; }
+    .hero-section { min-height: 500px; display: flex; align-items: center; justify-content: center; background-color: #e9ecef; }
+    .search-form { max-width: 600px; width: 100%; }
+    .review-card { margin-bottom: 20px; }
+</style>
+{% endblock %}
+
+{% block navbar %}
+<!-- Same navbar as before -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">ScrubScout</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}">Logout ({{ user.display_name|default:user.username }})</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Main Search (Google/Yelp Style) -->
+<div class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 mb-4">Find Trusted Reviews for Healthcare Travel</h1>
+        <p class="lead mb-4">Search hospitals, clinics, and agencies by name, location, or specialty.</p>
+        <form class="search-form mx-auto" method="get" action="{% url 'search_results' %}">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control form-control-lg" placeholder="Search hospitals, agencies, or locations..." aria-label="Search" value="{{ request.GET.q|default:'' }}">
+                <button class="btn btn-primary btn-lg" type="submit">Search</button>
+            </div>
+            <small class="text-muted mt-2 d-block">e.g., "City Hospital ER" or "Travel Nurse Agency"</small>
+        </form>
+    </div>
+</div>
+
+<!-- Sample Reviews Section (Teaser for Unsearched Visitors) -->
+<div class="container py-5">
+    <h2 class="text-center mb-4">What Healthcare Workers Are Saying</h2>
+    <div class="row">
+        {% if top_places %}
+            {% for place in top_places %}
+            <div class="col-md-4">
+                <div class="card review-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ place.name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ place.category }} - {% if place.average_rating %}{{ place.average_rating|floatformat:1 }}/5{% else %}No Reviews{% endif %}</h6>
+                        <p class="card-text">
+                            {% if place.reviews.first %}
+                                "{{ place.reviews.first.body|truncatewords:15 }}"
+                            {% else %}
+                                "Great staff support and verified contracts!"
+                            {% endif %}
+                        </p>
+                        <p class="card-text"><small class="text-muted">By {{ place.reviews.first.user.display_name|default:"Anonymous" }} on {{ place.reviews.first.created_at|date:"M d, Y"|default:"Recent" }}</small></p>
+                        <a href="{{ place.get_absolute_url }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Static fallback if no places -->
+            <div class="col-md-4">
+                <div class="card review-card">
+                    <div class="card-body">
+                        <h5 class="card-title">City Hospital</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">Hospital - 4/5</h6>
+                        <p class="card-text">"Great staff support, but housing stipend was low. Verified contract!"</p>
+                        <p class="card-text"><small class="text-muted">By NurseJane on Aug 25, 2025</small></p>
+                    </div>
+                </div>
+            </div>
+            <!-- Add 2 more static cards like before -->
+        {% endif %}
+    </div>
+    <div class="text-center mt-4">
+        <a href="{% url 'search_results' %}" class="btn btn-primary">Browse All Reviews</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}ScrubScout Search{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Search Healthcare Facilities</h1>
+    
+    <!-- Global Search Form (in header or here) -->
+    <form method="GET" class="mb-4">
+        <div class="row">
+            <div class="col-md-8">
+                <input type="text" name="q" class="form-control" placeholder="Search by name, address, or tags (e.g., ER, PT)..." value="{{ query }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+        <!-- Sort Options -->
+        <div class="mt-2">
+            <label>Sort by: </label>
+            <select name="sort" onchange="this.form.submit()" class="form-select d-inline w-auto">
+                <option value="name" {% if sort == 'name' %}selected{% endif %}>Name (A-Z)</option>
+                <option value="rating" {% if sort == 'rating' %}selected{% endif %}>Highest Rated</option>
+                <option value="reviews" {% if sort == 'reviews' %}selected{% endif %}>Most Reviewed</option>
+            </select>
+        </div>
+        <!-- Tag Filter (simple input for MVP) -->
+        <div class="mt-2">
+            <label>Tags (comma-separated): </label>
+            <input type="text" name="tags" class="form-control d-inline w-auto" value="{{ tags }}" placeholder="e.g., ER,PT">
+            <button type="submit" class="btn btn-secondary btn-sm">Filter</button>
+        </div>
+    </form>
+
+    <!-- Results -->
+    {% if total_results > 0 %}
+        <p class="text-muted">{{ total_results }} results found{% if query %} for "{{ query }}"{% endif %}.</p>
+        <div class="row">
+            {% for place in places %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ place.name }}</h5>
+                        <p class="card-text">{{ place.category }} • {{ place.address }}</p>
+                        {% if place.average_rating %}
+                            <p class="text-warning">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= place.average_rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                                ({{ place.average_rating|floatformat:1 }} / {{ place.review_count }} reviews)
+                            </p>
+                        {% else %}
+                            <p>No reviews yet.</p>
+                        {% endif %}
+                        <p><small class="text-muted">Tags: {{ place.tags }}</small></p>
+                        <a href="{{ place.get_absolute_url }}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">No places found. Try a different search!</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+<!-- Simple nav partial if needed -->
+<nav>
+    <ul>
+        {% for name, url in nav_items %}
+            <li><a href="{{ url }}">{{ name }}</a></li>
+        {% endfor %}
+    </ul>
+</nav>
