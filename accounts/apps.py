@@ -5,5 +5,6 @@ class AccountsConfig(AppConfig):
     name = 'accounts'
 
     def ready(self):
-        # Connect signals AFTER registry is ready
-        import accounts.signals
+        # Intentionally do NOT import accounts.signals here.
+        # Review-related signals live in reviews.signals.
+        pass

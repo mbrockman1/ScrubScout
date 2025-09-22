@@ -20,13 +20,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('accounts/', include('accounts.urls')),
-    path('places/', include('places.urls')),
-    path('reviews/', include('reviews.urls')),
-    path('moderation/', include('moderation.urls')),
-    path('search/', include('search.urls')),  # /search/ → results
-    path('', include('core.urls')),  # / → landing/home (new, see Step 2)
+    path("admin/", admin.site.urls),
+    path("accounts/", include("accounts.urls")),
+    path("places/", include(("places.urls", "places"), namespace="places")),  # <-- namespaced
+    path("reviews/", include("reviews.urls")),
+    path("moderation/", include("moderation.urls")),
+    path("search/", include("search.urls")),
+    path("", include("core.urls")),
 ]
 
 if settings.DEBUG:

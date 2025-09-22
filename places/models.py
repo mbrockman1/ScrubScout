@@ -1,15 +1,16 @@
 from django.db import models
 from django.utils.text import slugify
+from django.urls import reverse
 
 class Place(models.Model):
-    facility_id = models.CharField(max_length=50, unique=True, blank=True, null=True)  # New
+    facility_id = models.CharField(max_length=50, unique=True, blank=True, null=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
     address = models.TextField(blank=True)
-    city = models.CharField(max_length=100, blank=True)  # New
-    state = models.CharField(max_length=2, blank=True)   # New
-    zip_code = models.CharField(max_length=10, blank=True)  # New
-    phone = models.CharField(max_length=20, blank=True)  # New
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=2, blank=True)
+    zip_code = models.CharField(max_length=10, blank=True)
+    phone = models.CharField(max_length=20, blank=True)
     category = models.CharField(max_length=100, default="Hospital")
     tags = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
@@ -20,8 +21,8 @@ class Place(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            base_slug = slugify(self.name)
-            self.slug = get_unique_slug(base_slug)  # Add this import: from .management.commands.import_places import get_unique_slug
+            base_slug = slugify(self.name or "")
+            self.slug = _get_unique_slug(base_slug, self.__class__)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -29,16 +30,19 @@ class Place(models.Model):
 
     @property
     def rating_display(self):
-        return f"{self.average_rating}/5.0"  # For templates
-    
+        return f"{self.average_rating}/5.0"
+
     def get_absolute_url(self):
-        from django.urls import reverse
-        return reverse('place_detail', kwargs={'slug': self.slug})
-    
-def get_unique_slug(base_slug, model_class=Place):
+        # Namespaced reverse to match scrubscout/urls.py include
+        return reverse("places:place_detail", kwargs={"slug": self.slug})
+
+
+def _get_unique_slug(base_slug: str, model_class):
     """
     Generate a unique slug by appending -1, -2, etc. if it exists.
     """
+    if not base_slug:
+        base_slug = "place"
     unique_slug = base_slug
     counter = 1
     while model_class.objects.filter(slug=unique_slug).exists():

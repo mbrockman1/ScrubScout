@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h1>Delete Review</h1>
+    <p>Are you sure you want to delete "{{ review.title }}"?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirm Delete</button>
+        <a href="{% url 'review_detail' review_id=review.pk %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

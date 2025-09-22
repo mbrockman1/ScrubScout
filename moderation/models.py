@@ -28,3 +28,5 @@ class ModerationAction(models.Model):
 
     def __str__(self):
         return f"{self.action} by {self.staff.display_name} on {self.review.title}"
+    
+

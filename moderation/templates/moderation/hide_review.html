@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h1>Hide Review</h1>
+    <p>Are you sure you want to hide "{{ review.title }}" by {{ review.author.display_name }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">Confirm Hide</button>
+        <a href="{% url 'moderator_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

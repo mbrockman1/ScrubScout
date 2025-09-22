@@ -1,0 +1,9 @@
+Hey, imagine you're a travel nurse scouting your next contract: You need a hospital with solid staffing, fair pay, and decent housing—but sifting through agency ads and vague forums feels like a gamble. What if there was a Yelp just for healthcare facilities?
+
+That's ScrubScout: A smart platform built for travel pros like nurses, docs, and therapists to discover, review, and rate hospitals, clinics, and agencies based on real experiences. No more blind leaps—get verified insights on everything from ER chaos to stipend perks.
+
+Here's how it works: Sign up, search our database of 5,000+ real U.S. hospitals (pulled from official sources), filter by location or type, and dive into details. Found a spot? Leave a quick review with star ratings, a title like 'Great Pay, Rough Schedule,' and honest feedback. Other users see aggregated scores, moderated for trust—no spam, just straight talk.
+
+As the founder, I'm bootstrapping this MVP with Django for speed and security. Early testers are raving about the ease—search to review in under a minute. We're starting simple: Core search, auth, and moderation. Next up: Maps, user verification, and agency-specific tools to make travel scouting a breeze.
+
+If you're in healthcare travel or know someone who is, join the beta at scrubscout.com—sign up, drop a review, and help shape it. Let's make those contracts less risky and more rewarding. What's your biggest hospital hunt horror story?

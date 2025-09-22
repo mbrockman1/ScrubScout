@@ -5,12 +5,13 @@ from django.shortcuts import render, redirect
 from django.views.generic import CreateView, UpdateView, TemplateView
 from .models import CustomUser
 from .forms import CustomUserCreationForm, ProfileForm
+from reviews.models import Review
 
-class SignupView(SuccessMessageMixin, CreateView):  # FIXED: Subclass CreateView, not the form!
+class SignupView(SuccessMessageMixin, CreateView):
     model = CustomUser
     form_class = CustomUserCreationForm
     template_name = 'accounts/signup.html'
-    success_url = '/'  # Redirect to homepage after signup (or '/accounts/profile/' if preferred)
+    success_url = '/'  # Redirect to homepage after signup
     success_message = 'Account created successfully!'
 
 class ProfileView(LoginRequiredMixin, TemplateView):
@@ -19,6 +20,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['profile'] = self.request.user
+        context['user_reviews'] = Review.objects.filter(author=self.request.user, is_hidden=False).order_by('-created_at')
         return context
 
 class EditProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

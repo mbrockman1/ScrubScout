@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ review.title }}</h1>
+    <p class="text-muted">By {{ review.author.display_name }} for {{ review.place.name }} ({{ review.created_at|date:"M d, Y" }})</p>
+    <p><strong>Rating:</strong> {{ review.rating }}/5</p>
+    <p><strong>Pay Scale:</strong> {{ review.pay_scale|default:"Not specified" }}</p>
+    <p><strong>Housing Details:</strong> {{ review.housing_details|default:"Not specified" }}</p>
+    <p>{{ review.body }}</p>
+    {% if user == review.author %}
+        <a href="{% url 'review_edit' review_id=review.pk %}" class="btn btn-primary">Edit</a>
+        <a href="{% url 'review_delete' review_id=review.pk %}" class="btn btn-danger">Delete</a>
+    {% endif %}
+    <a href="{{ review.place.get_absolute_url }}" class="btn btn-secondary">Back to Place</a>
+</div>
+{% endblock %}

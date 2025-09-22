@@ -1,9 +1,10 @@
+# reviews/apps.py
 from django.apps import AppConfig
 
 class ReviewsConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'reviews'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "reviews"
 
     def ready(self):
-        # Connect signals here - imports happen AFTER apps are loaded
-        import reviews.signals  # This will import and connect signals.py
+        # Ensure this is the single source of truth for review signals
+        from . import signals  # noqa: F401

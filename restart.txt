@@ -1,0 +1,25 @@
+# From project root
+rm -f db.sqlite3
+
+# Remove *only* app migration files except __init__.py
+find . -path "*/migrations/*.py" ! -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc" -delete
+
+# Make sure accounts/signals.py is deleted and accounts/apps.py matches the drop-in above
+# Ensure reviews/apps.py, reviews/models.py, reviews/signals.py match the drop-ins
+
+# Recreate migrations from the current models (which now use `author`)
+python manage.py makemigrations
+
+# Apply fresh schema
+python manage.py migrate
+
+# Hospital Data
+python manage.py import_places hospitals.xlsx
+python manage.py normalize_addresses
+
+# Create a superuser if needed
+python manage.py createsuperuser
+
+# Run it
+python manage.py runserver

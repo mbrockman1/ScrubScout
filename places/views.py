@@ -26,6 +26,10 @@ def place_detail(request, slug):
     }
     return render(request, 'places/place_detail.html', context)
 
+def place_list(request):
+    places = Place.objects.all()
+    return render(request, "places/place_list.html", {"places": places})
+
 # Optional: If you want a separate view for listing all places (not needed for MVP, but add if wanted)
 # def place_list(request):
 #     places = Place.objects.all().order_by('name')
